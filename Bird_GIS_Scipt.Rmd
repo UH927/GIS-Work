@@ -1,0 +1,181 @@
+---
+title: "GIS"
+author: "Uzair Hendricks"
+date: "2026-02-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r,message=FALSE}
+##this contains work for my GIS project to help visualize the temperature range that white-browed sparrow-weavers inhabit. 
+
+#prepping packages
+
+library(sf)
+library(tidyverse)
+library(ggspatial)
+library(rinat)
+library(ggplot2)
+install.packages("prettymapr")
+```
+
+```{r}
+#reading in the data from iNaturalist for the white-browed sparrow weaver
+
+bird = get_inat_obs(taxon_name = "Plocepasser mahali",
+                    bounds = c(-35, -18,-22,33),
+                    maxresults = 2000)
+
+#read first few rows of the data
+
+head(bird)
+
+
+```
+```{r}
+#filtering the data by a range of column atribute criteria
+
+bird <- bird %>% filter(positional_accuracy<10000 & 
+                latitude<0 &
+                !is.na(latitude) &
+                captive_cultivated == "false" &
+                quality_grade == "research")
+
+class(bird)
+```
+```{r}
+#making the dataframe into a class sf spatial object
+
+bird <- st_as_sf(bird, coords = c("longitude", "latitude"), crs = 4326)
+
+#checking what class it is
+
+class(bird)
+
+#checking for new geometry column
+
+names(bird)
+```
+```{r}
+#plotting out the data points
+
+ggplot() + geom_sf(data=bird)
+```
+
+```{r}
+#adding the basemap to the plot
+
+library(rosm)
+library(ggspatial)
+
+ggplot() + 
+  annotation_map_tile(type = "osm", progress = "none")+
+  geom_sf(data=bird)
+
+```
+
+```{r}
+####creating an interactive map
+
+library(leaflet)
+library(htmltools)
+leaflet() %>% 
+  # add default OpenStreetMap tiles
+  addTiles(group = "Default") %>%
+  
+  #Add my points
+  
+  addCircleMarkers(data=bird,
+                   group = "Plocepasser mahali",
+                   radius = 2,
+                   color = "brown")
+
+#checking the map datapoints
+
+library(mapview)
+library(leafpop)
+
+mapview(bird,
+        popup = 
+          popupTable(bird,
+                     zcol = c("user_login", "captive_cultivated", "url")))
+
+#making the URL's live links
+
+Live_bird <- bird %>%
+  mutate(click_url = paste("<b><a href='", url, "'>Link to iNat observation</a></b>"))
+
+mapview(bird, 
+        popup = 
+          popupTable(Live_bird,
+            zcol = c("user_login", "captive_cultivated", "click_url")))
+```
+
+```{r}
+
+#####intersecting points and polygons
+
+#calls dimensions of bird
+dim(bird)
+
+bird = st_intersection(bird,)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
