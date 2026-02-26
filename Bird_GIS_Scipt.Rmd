@@ -135,17 +135,73 @@ mapview(bird,
             zcol = c("user_login", "captive_cultivated", "click_url")))
 ```
 
+```{r, message=FALSE}
+#getting global temperature data
+
+library(geodata)
+
+temp = worldclim_global(var = "tavg", res = 5, path = tempdir())
+
+#cropping global temp data to Southern Africa
+
+box = ext(10, 35, -35, -22)
+temp = crop(temp, box)
+
+
+library(terra)
+
+#checking the crs of temp data
+
+crs(temp)
+
+#reprojecting the temp data
+
+tproj = project(temp, crs(bird), method = "bilinear")
+crs(tproj)
+ncell(tproj)
+```
+
 ```{r}
 
-#####intersecting points and polygons
+#plotting the temperature data
 
-#calls dimensions of bird
-dim(bird)
+plot(tproj[[1]], main = "Average Temperature")
+```
+```{r}
+# Ensure the bird data matches the raster's map projection
+bird_proj <- st_transform(bird, crs(tproj))
 
-bird = st_intersection(bird,)
+#converting temperature raster data to a data frame
+
+tempdf <- as.data.frame(tproj[[1]], xy = TRUE)
+
+#renaming temperature column for fill argument
+
+names(tempdf)[3] <- "Temp"
+
+#plottting
+
+# 2. Plotting
+ggplot() +
+  geom_raster(data = tempdf, aes(x = x, y = y, fill = Temp)) +
+  geom_sf(data = bird, colour = "black", size = 1) +
+  scale_fill_viridis_c(name = "Avg Temp (°C)") +
+  labs(title = "Plocepasser mahali Distribution vs Temperature") +
+  theme_minimal()
 ```
 
 
+```{r}
+leaflet() %>% 
+  # add default OpenStreetMap tiles
+  addTiles(group = "Default") %>%
+  
+  #Add my points
+  
+  addCircleMarkers(data=tproj,
+                   radius = 2,
+                   color = "brown")
+```
 
 
 
