@@ -40,7 +40,6 @@ library(tidyverse)
 library(ggspatial)
 library(rinat)
 library(ggplot2)
-install.packages("prettymapr")
 ```
 
 ```{r}
@@ -179,9 +178,9 @@ tempdf <- as.data.frame(tproj[[1]], xy = TRUE)
 
 names(tempdf)[3] <- "Temp"
 
-#plottting
+####plotting
 
-# 2. Plotting
+#Plotting temperature vs distribution
 ggplot() +
   geom_raster(data = tempdf, aes(x = x, y = y, fill = Temp)) +
   geom_sf(data = bird, colour = "black", size = 1) +
@@ -192,15 +191,38 @@ ggplot() +
 
 
 ```{r}
+#making an interactive map of the 2 datasets
+
 leaflet() %>% 
   # add default OpenStreetMap tiles
   addTiles(group = "Default") %>%
   
   #Add my points
   
-  addCircleMarkers(data=tproj,
+  addCircleMarkers(data=bird,
+                   group = "Plocepasser mahali",
                    radius = 2,
                    color = "brown")
+
+#checking the map datapoints
+
+mapview(bird,
+        popup = 
+          popupTable(bird,
+                     zcol = c("user_login", "captive_cultivated", "url")))
+
+#making the URL's live links
+
+Live_bird <- bird %>%
+  mutate(click_url = paste("<b><a href='", url, "'>Link to iNat observation</a></b>"))
+
+mapview(bird, 
+        popup = 
+          popupTable(Live_bird,
+            zcol = c("user_login", "captive_cultivated", "click_url"))) + 
+mapview(tproj[[1]], 
+        layer.name = "Average Temperature", 
+        col.regions = viridisLite::viridis(100))
 ```
 
 
