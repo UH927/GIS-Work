@@ -193,29 +193,6 @@ ggplot() +
 ```{r}
 #making an interactive map of the 2 datasets
 
-leaflet() %>% 
-  # add default OpenStreetMap tiles
-  addTiles(group = "Default") %>%
-  
-  #Add my points
-  
-  addCircleMarkers(data=bird,
-                   group = "Plocepasser mahali",
-                   radius = 2,
-                   color = "brown")
-
-#checking the map datapoints
-
-mapview(bird,
-        popup = 
-          popupTable(bird,
-                     zcol = c("user_login", "captive_cultivated", "url")))
-
-#making the URL's live links
-
-Live_bird <- bird %>%
-  mutate(click_url = paste("<b><a href='", url, "'>Link to iNat observation</a></b>"))
-
 mapview(bird, 
         popup = 
           popupTable(Live_bird,
