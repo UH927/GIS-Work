@@ -6,3 +6,7 @@ Uzair Hendricks
 
 # Background information #
 Rising temperatures are affecting wildlife populations globally. In hot, semi-arid and arid environments, animals face complex challenges of balancing energy and water budgets and maintaining stable body temperatures and body condition. These challenges are exacerbated by the increased mean temperatures and frequency of heatwaves that now occur. Due to this. I have created this project to examine the temperature range that the Weaver inhabits during summer months.
+
+# GitHack Link
+
+Find the link to my Knitted HTML here: [https://rawcdn.githack.com/UH927/GIS-Work/f093230de1ba0d10f7d8533e0833703a2b6b9d4c/Bird_GIS_Scipt.html] 
