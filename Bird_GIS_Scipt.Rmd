@@ -38,7 +38,7 @@ head(bird)
 ```{r}
 #filtering the data by a range of column atribute criteria
 
-bird <- bird %>% filter(positional_accuracy<10000 & 
+bird <- bird %>% filter(positional_accuracy<100 & 
                 latitude<0 &
                 !is.na(latitude) &
                 captive_cultivated == "false" &
